@@ -1,7 +1,7 @@
 from pytube import YouTube
 from pytube import Playlist
 from alive_progress import alive_bar
-import validators
+import validators.url as check_url
 import moviepy.editor as mp
 import os
 import re
@@ -61,7 +61,7 @@ def join_playlist_folder_to_path(playlist_url: str, folder: str):
 
 
 def invalid_url_err(playlist_url: str):
-    if not validators.url(playlist_url):
+    if not check_url(playlist_url):
         print("URL %s not valid, quitting..." % playlist_url)
         sys.exit(1)
 
@@ -124,7 +124,9 @@ def cli():
             invalid_url_err(playlist_url)
             download_mp4_from_yt(
                 Playlist(playlist_url), join_playlist_folder_to_path(playlist_url, folder))
-            if sys.argv[3] in ["-c", "--convert"] or sys.argv[5] in ["-c", "--convert"]:
+        if sys.argv[3] in ["-c", "--convert"] or sys.argv[5] in ["-c", "--convert"]:
+            for playlist_url in url_list:
+                invalid_url_err(playlist_url)
                 convert_mp4_to_mp3(
                     join_playlist_folder_to_path(playlist_url), folder)
         sys.exit(0)
